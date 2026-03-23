@@ -1,7 +1,10 @@
 import express from "express"
 import dotenv from "dotenv"
 import mongoose from "mongoose"
-import userRoutes from "./routes/userRoutes" // ✅ ESModule import
+import courseRoutes from "./routes/courseRoutes"
+import userRoutes from "./routes/userRoutes"
+import uploadRoutes from "./routes/uploadRoutes"
+
 
 dotenv.config()
 
@@ -13,8 +16,10 @@ const startServer = async () => {
     await mongoose.connect(process.env.MONGO_URI as string)
     console.log("MongoDB Connected ✅")
 
-    // Routes
     app.use("/api/users", userRoutes)
+    app.use("/api/courses", courseRoutes)
+    app.use("/api/upload", uploadRoutes)
+
 
     app.get("/", (_req, res) => res.send("EduVerse backend running 🚀"))
 
@@ -27,3 +32,4 @@ const startServer = async () => {
 }
 
 startServer()
+

@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import User from "../models/User"
+import User from "../models/user"
 import jwt from "jsonwebtoken"
 
 export const registerUser = async (req: Request, res: Response) => {
@@ -75,5 +75,15 @@ export const loginUser = async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error)
     res.status(500).json({ message: "Server error" })
+  }
+}
+
+
+export const getProfile = async (req: any, res: Response) => {
+  const user = req.user
+  if (user) {
+    res.json({ _id: user._id, name: user.name, email: user.email, role: user.role })
+  } else {
+    res.status(404).json({ message: "User not found" })
   }
 }
