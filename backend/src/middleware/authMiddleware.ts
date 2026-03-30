@@ -1,44 +1,54 @@
-import { Request, Response, NextFunction } from "express"
-import jwt from "jsonwebtoken"
-import user, { IUser } from "../models/user"
+import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+import User, { IUser } from "../models/user";
 
-// Custom TypeScript type for Request with user
+// Extend Request type
 interface AuthRequest extends Request {
-  user?: IUser
+  user?: IUser;
 }
 
-export const protect = async (req: AuthRequest, res: Response, next: NextFunction) => {
-  let token
+// 🔐 Protect middleware
+export const protect = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  let token;
 
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
+  if (req.headers.authorization?.startsWith("Bearer")) {
     try {
-      // Get token from header
-      token = req.headers.authorization.split(" ")[1]
+      token = req.headers.authorization.split(" ")[1];
 
-      // Verify token
-      const decoded: any = jwt.verify(token, process.env.JWT_SECRET as string)
+      const decoded: any = jwt.verify(
+        token,
+        process.env.JWT_SECRET as string
+      );
 
-      // Get user from token (exclude password)
-      req.user = await User.findById(decoded.id).select("-password")
+      req.user = await User.findById(decoded.id).select("-password");
 
-      next() // allow access
+      if (!req.user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
+      return next(); // ✅ IMPORTANT
     } catch (error) {
-      console.error(error)
-      res.status(401).json({ message: "Not authorized, token failed" })
+      console.error(error);
+      return res.status(401).json({ message: "Not authorized, token failed" });
     }
   }
 
-  if (!token) {
-    res.status(401).json({ message: "Not authorized, no token" })
-  }
-}
-export const admin = (req: any, res: any, next: any) => {
+  return res.status(401).json({ message: "Not authorized, no token" });
+};
+
+// 👑 Admin middleware
+export const admin = (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
   if (req.user && req.user.role === "admin") {
-    next()
-  } else {
-    res.status(403).json({ message: "Admin only" })
+    return next(); // ✅ IMPORTANT
   }
-}
+
+  return res.status(403).json({ message: "Admin only" });
+};
