@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import API from "@/lib/axios";
+import API from "@/src/lib/axios";
 
 export default function CreateInstructorPage() {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
