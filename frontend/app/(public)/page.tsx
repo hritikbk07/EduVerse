@@ -4,8 +4,9 @@ import Navbar from "@/src/components/navbar/Navbar";
 import { useCourses } from "@/src/hooks/useCourse";
 import CourseCard from "@/src/components/course/CourseCard";
 
+
 export default function HomePage() {
-  const { courses, loading } = useCourses();
+  const { courses, loading, error } = useCourses();
 
   return (
     <div>
@@ -28,15 +29,19 @@ export default function HomePage() {
       <section className="p-8">
         <h2 className="text-2xl font-semibold mb-6">Featured Courses</h2>
 
-        {loading ? (
-          <p>Loading...</p>
-        ) : (
-          <div className="grid md:grid-cols-3 gap-6">
-            {courses.slice(0, 6).map((course) => (
-              <CourseCard key={course._id} course={course} />
-            ))}
-          </div>
-        )}
+      {loading ? (
+  <p>Loading...</p>
+) : error ? (
+  <p className="text-red-500">{error}</p>
+) : courses.length === 0 ? (
+  <p>No courses available</p>
+) : (
+  <div className="grid md:grid-cols-3 gap-6">
+    {courses.slice(0, 6).map((course) => (
+      <CourseCard key={course._id} course={course} />
+    ))}
+  </div>
+)}  
       </section>
 
       {/* CTA */}

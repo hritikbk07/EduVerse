@@ -1,15 +1,49 @@
-import express from "express"
-import { addLesson, createCourse, getCourses, getLessons } from "../controllers/courseController"
-import { protect, admin } from "../middleware/authMiddleware"
+import express from "express";
+import {
+  addLesson,
+  createCourse,
+  getCourses,
+  getLessons,
+  getSingleCourse,
+  getInstructorCourses, // ✅ ADD
+} from "../controllers/courseController";
 
-const router = express.Router()
+import { protect } from "../middleware/authMiddleware";
+import { requireRole } from "../middleware/roleMiddleware";
 
-// Public
-router.get("/", getCourses)
-router.get("/:courseId/lessons", getLessons)
+const router = express.Router();
 
-// Admin only
-router.post("/", protect, admin, createCourse)
-router.post("/lesson", protect, admin, addLesson)
+// ✅ Public
+router.get("/", getCourses);
 
-export default router
+// ✅ Instructor route (MUST BE BEFORE :courseId)
+router.get(
+  "/instructor",
+  protect,
+  requireRole("instructor", "admin"),
+  getInstructorCourses
+);
+
+// ✅ Lessons
+router.get("/:courseId/lessons", getLessons);
+
+// ✅ Create course (FIXED)
+router.post(
+  "/create",
+  protect,
+  requireRole("instructor", "admin"), // ✅ FIXED
+  createCourse
+);
+
+// ✅ Single course
+router.get("/:courseId", getSingleCourse);
+
+// ✅ Add lesson
+router.post(
+  "/lesson",
+  protect,
+  requireRole("instructor", "admin"),
+  addLesson
+);
+
+export default router;

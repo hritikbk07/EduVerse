@@ -1,22 +1,22 @@
-import mongoose, { Schema, Document } from "mongoose"
+import mongoose, { Schema, Document, Types } from "mongoose";
 
 export interface ILesson extends Document {
-  course: mongoose.Schema.Types.ObjectId
-  title: string
-  videoUrl: string
+  course: Types.ObjectId; // ✅ FIXED
+  title: string;
+  videoUrl: string;
 }
 
-const lessonSchema = new Schema(
+const lessonSchema = new Schema<ILesson>(
   {
     course: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Course",
-      required: true
+      type: Schema.Types.ObjectId, // ✅ correct for schema
+      ref: "Courses", // ⚠️ match your Course model name
+      required: true,
     },
     title: { type: String, required: true },
-    videoUrl: { type: String, required: true }
+    videoUrl: { type: String, required: true },
   },
   { timestamps: true }
-)
+);
 
-export default mongoose.model<ILesson>("Lessons", lessonSchema)
+export default mongoose.model<ILesson>("Lessons", lessonSchema);

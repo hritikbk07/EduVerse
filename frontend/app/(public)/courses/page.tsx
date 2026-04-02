@@ -14,7 +14,7 @@ export default function AdminCourses() {
 
   // Fetch courses
   const fetchCourses = async () => {
-    const res = await axios.get("/api/course");
+    const res = await axios.get("/api/courses");
     setCourses(res.data);
   };
 
@@ -31,7 +31,7 @@ export default function AdminCourses() {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    await axios.post("/api/course");
+    await axios.post("/api/courses/create", form);
     alert("Course created ✅");
 
     setForm({ title: "", description: "", instructor: "", price: 0 });

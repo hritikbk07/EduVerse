@@ -29,7 +29,7 @@ export default function LoginPage() {
       // console.log(res.data);
 
       localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("user", JSON.stringify(res.data));
 
       // 🔥 Role-based redirect
       if (user.role === "student") router.push("/dashboard");

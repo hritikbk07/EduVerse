@@ -11,14 +11,16 @@ export interface Course {
 export const useCourses = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await API.get("/courses");
+        const res = await API.get("/api/courses");
         setCourses(res.data);
-      } catch (error) {
-        console.error("Error fetching courses", error);
+      } catch (err: any) {
+        console.error(err);
+        setError("Failed to fetch courses");
       } finally {
         setLoading(false);
       }
@@ -27,5 +29,5 @@ export const useCourses = () => {
     fetchCourses();
   }, []);
 
-  return { courses, loading };
+  return { courses, loading, error };
 };

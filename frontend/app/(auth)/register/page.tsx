@@ -11,6 +11,7 @@ export default function RegisterPage() {
     name: "",
     email: "",
     password: "",
+    role: "student", // default role
   });
 
   const [loading, setLoading] = useState(false);
@@ -47,7 +48,16 @@ export default function RegisterPage() {
         <h2 className="text-2xl text-black font-bold mb-6 text-center">
           Create Account
         </h2>
-
+<select
+  name="role"
+  value={form.role}
+  onChange={(e) => setForm({ ...form, role: e.target.value })}
+  className="w-full mb-4 p-3 text-black border rounded-lg focus:ring-2 focus:ring-green-500"
+>
+  <option value="student">Student</option>
+  <option value="instructor">Instructor</option>
+  <option value="admin">Admin (dev only)</option>
+</select>
         <input
           type="text"
           name="name"
