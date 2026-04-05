@@ -30,4 +30,12 @@ API.interceptors.response.use(
   }
 );
 
+export const enrollCourse = async (courseId: string) => {
+  return await API.post(`/api/enrollments/enroll/${courseId}`);
+};
+
+export const getMyCourses = async () => {
+  return await API.get("/api/enrollments/my-courses");
+};
+
 export default API;
