@@ -38,4 +38,25 @@ export const getMyCourses = async () => {
   return await API.get("/api/enrollments/my-courses");
 };
 
+// Admin APIs
+export const getAllUsers = async () => {
+  return await API.get("/api/admin/users");
+};
+
+export const updateUserRole = async (userId: string, role: string) => {
+  return await API.patch(`/api/admin/users/${userId}/role`, { role });
+};
+
+export const deleteUser = async (userId: string) => {
+  return await API.delete(`/api/admin/users/${userId}`);
+};
+
+export const getAllCourses = async () => {
+  return await API.get("/api/admin/courses");
+};
+
+export const deleteCourse = async (courseId: string) => {
+  return await API.delete(`/api/admin/courses/${courseId}`);
+};
+
 export default API;

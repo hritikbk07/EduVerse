@@ -40,7 +40,7 @@ export default function LoginPage() {
       // Role-based redirect
       if (user.role === "student") router.push("/dashboard");
       else if (user.role === "instructor") router.push("/instructor");
-      else if (user.role === "admin") router.push("/admin");
+      else if (user.role === "admin") router.push("/admin/dashboard");
 
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Login failed", {
