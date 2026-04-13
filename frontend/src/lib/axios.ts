@@ -59,4 +59,8 @@ export const deleteCourse = async (courseId: string) => {
   return await API.delete(`/api/admin/courses/${courseId}`);
 };
 
+export const getAdminStats = async () => {
+  return await API.get("/api/admin/stats");
+};
+
 export default API;
