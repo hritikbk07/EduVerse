@@ -7,7 +7,9 @@ import API from "@/src/lib/axios";
 import { enrollCourse } from "@/src/lib/axios";
 import Navbar from "@/src/components/navbar/Navbar";
 import { useAuthStore } from "@/src/store/authStore";
-import { BookOpen, GraduationCap, Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { useLessons } from "@/src/hooks/useLesson";
+import VideoPlayer from "@/src/components/VideoPlayer";
+import { BookOpen, GraduationCap, Loader2, CheckCircle2, XCircle, PlayCircle } from "lucide-react";
 
 interface Course {
   _id: string;
@@ -24,6 +26,8 @@ export default function CourseDetailPage() {
   const courseId = params.id as string;
   const { user } = useAuthStore();
   const isStudent = user?.role === "student";
+
+  const { lessons, loading: lessonsLoading } = useLessons(courseId);
 
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
@@ -199,13 +203,38 @@ export default function CourseDetailPage() {
           </div>
         )}
 
-        {/* Lessons Placeholder */}
+        {/* Lessons List */}
         <div className="mt-8 bg-slate-900/30 border border-slate-800/50 rounded-2xl p-8">
-          <h2 className="text-2xl font-semibold text-white mb-3 flex items-center gap-2">
+          <h2 className="text-2xl font-semibold text-white mb-6 flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-indigo-400" />
             Course Curriculum
           </h2>
-          <p className="text-slate-500">Lessons will appear here once added by the instructor.</p>
+          
+          {lessonsLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-6 h-6 animate-spin text-indigo-400" />
+            </div>
+          ) : lessons && lessons.length > 0 ? (
+            <div className="space-y-4">
+              {lessons.map((lesson: any, index: number) => (
+                <div key={lesson._id} className="flex flex-col gap-4 p-6 rounded-xl bg-slate-800/30 border border-slate-700/50 hover:bg-slate-800/50 transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center shrink-0">
+                      <PlayCircle className="w-5 h-5 text-indigo-400" />
+                    </div>
+                    <h3 className="text-xl text-slate-200 font-bold">{index + 1}. {lesson.title}</h3>
+                  </div>
+                  {lesson.videoUrl && (
+                    <div className="w-full mt-2 rounded-xl overflow-hidden shadow-lg border border-slate-700/50">
+                      <VideoPlayer videoUrl={lesson.videoUrl} />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-slate-500">Lessons will appear here once added by the instructor.</p>
+          )}
         </div>
       </main>
     </div>

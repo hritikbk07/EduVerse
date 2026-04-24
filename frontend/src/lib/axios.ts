@@ -7,7 +7,17 @@ const API = axios.create({
 
 // Attach token automatically
 API.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  let token = localStorage.getItem("token");
+  
+  if (!token) {
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        token = user.token || null;
+      } catch (err) {}
+    }
+  }
 
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -61,6 +71,23 @@ export const deleteCourse = async (courseId: string) => {
 
 export const getAdminStats = async () => {
   return await API.get("/api/admin/stats");
+};
+
+// Lesson APIs
+export const uploadVideoFile = async (formData: FormData) => {
+  return await API.post("/api/lesson/upload-video", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+export const createLesson = async (data: { title: string; courseId: string; videoUrl: string; publicId: string }) => {
+  return await API.post("/api/lesson/create", data);
+};
+
+export const getLessonsByCourse = async (courseId: string) => {
+  return await API.get(`/api/lesson/${courseId}`);
 };
 
 export default API;

@@ -45,12 +45,12 @@ export default function HomePage() {
           <Sparkles className="w-4 h-4" />
           <span>The next generation of learning</span>
         </div>
-        
+
         <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-tight animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100 shadow-sm">
-          Learn Without <br/>
+          Learn Without <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-blue-400">Limits.</span>
         </h1>
-        
+
         <p className="text-lg md:text-xl text-slate-400 mb-10 max-w-2xl leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
           Upgrade your skills with world-class instructors. Dive into interactive, high-quality courses designed to accelerate your career.
         </p>
@@ -112,6 +112,8 @@ export default function HomePage() {
             {courses.slice(0, 6).map((course, i) => (
               <div key={course._id} className="animate-in fade-in slide-in-from-bottom-8 duration-700 fill-mode-both" style={{ animationDelay: `${i * 100}ms` }}>
                 <CourseCard course={course} />
+                <h2>{course.title}</h2>
+
               </div>
             ))}
           </div>
@@ -123,7 +125,7 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/20 to-purple-600/20 rounded-[3rem] blur-xl" />
         <div className="relative bg-slate-900/50 border border-indigo-500/30 backdrop-blur-xl p-12 md:p-20 rounded-[3rem] text-center overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-          
+
           <h2 className="text-4xl md:text-5xl font-extrabold mb-6 relative z-10">
             Ready to Start <span className="text-indigo-400">Learning?</span> 🎯
           </h2>

@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import { Plus, X, Loader2, Compass } from "lucide-react";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 import API from "@/src/lib/axios";
 import CourseCard, { Course } from "@/src/components/course/CourseCard";
 import { Skeleton } from "@/src/components/ui/Skeleton";
 
 export default function InstructorDashboard() {
+  const router = useRouter();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -96,15 +98,16 @@ export default function InstructorDashboard() {
           headers: { Authorization: `Bearer ${token}` },
         });
         toast.success("Course updated effectively!");
+        setIsModalOpen(false);
+        fetchCourses();
       } else {
-        await API.post("/api/courses/create", form, {
+        const res = await API.post("/api/courses/create", form, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        toast.success("Brilliant! New course launched.");
+        toast.success("Brilliant! New course launched. Let's add some lessons!");
+        setIsModalOpen(false);
+        router.push(`/instructor/courses/${res.data._id}/lessons`);
       }
-      
-      setIsModalOpen(false);
-      fetchCourses();
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Failed to save course");
     } finally {

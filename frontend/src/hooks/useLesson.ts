@@ -8,7 +8,7 @@ export const useLessons = (courseId: string) => {
   useEffect(() => {
     const fetchLessons = async () => {
       try {
-        const res = await API.get(`/api/lessons/${courseId}`);
+        const res = await API.get(`/api/lesson/${courseId}`);
         setLessons(res.data);
       } catch (error) {
         console.error("Error fetching lessons", error);
