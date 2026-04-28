@@ -4,8 +4,8 @@ import { IUser } from "../models/user";
 interface AuthRequest extends Request {
   user?: IUser;
 }
-
-export const requireRole = (...roles: string[]) => {
+type Role = "student" | "instructor" | "admin";
+export const requireRole = (...roles: Role[]) => {
   return (req: AuthRequest, res: Response, next: NextFunction) => {
     if (!req.user) {
       return res.status(401).json({ message: "Not authorized" });

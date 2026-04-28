@@ -4,6 +4,7 @@ import { Types } from "mongoose";
 import Course from "../models/course";
 import Lesson from "../models/lesson";
 import { IUser } from "../models/user";
+import User from "../models/user"; 
 
 // ✅ Create Course (Admin only)
 export const createCourse = async (req: Request, res: Response): Promise<void> => {
@@ -65,6 +66,7 @@ export const addLesson = async (req: Request, res: Response): Promise<void> => {
       course: new Types.ObjectId(courseId),
       title,
       videoUrl,
+      publicId: "manual_upload",
     });
 
     res.status(201).json(lesson);

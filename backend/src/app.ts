@@ -1,8 +1,11 @@
 import express from "express";
 import cors from "cors";
 import courseRoutes from "./routes/courseRoutes";
-import uploadRoutes from "./routes/uploadRoutes";
+import lessonRoutes from "./routes/lesson.routes";
 import authRoutes from "./routes/authRoutes";
+import enrollmentRoutes from "./routes/enrollment.routes";
+import adminRoutes from "./routes/adminRoutes";
+import paymentRoutes from "./routes/payment.routes";
 
 const app = express();
 
@@ -16,7 +19,10 @@ app.use(express.json());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/courses", courseRoutes);
-app.use("/api/upload", uploadRoutes);
+app.use("/api/lesson", lessonRoutes);
+app.use("/api/enrollments", enrollmentRoutes);
+app.use("/api/payments", paymentRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.get("/", (_req, res) => res.send("EduVerse backend running 🚀"));
 

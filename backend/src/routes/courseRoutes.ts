@@ -6,6 +6,8 @@ import {
   getLessons,
   getSingleCourse,
   getInstructorCourses, // ✅ ADD
+  updateCourse,
+  deleteCourse,
 } from "../controllers/courseController";
 
 import { protect } from "../middleware/authMiddleware";
@@ -44,6 +46,22 @@ router.post(
   protect,
   requireRole("instructor", "admin"),
   addLesson
+);
+
+// ✅ Update course
+router.put(
+  "/:courseId",
+  protect,
+  requireRole("instructor", "admin"),
+  updateCourse
+);
+
+// ✅ Delete course
+router.delete(
+  "/:courseId",
+  protect,
+  requireRole("instructor", "admin"),
+  deleteCourse
 );
 
 export default router;

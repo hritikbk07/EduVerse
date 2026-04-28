@@ -1,22 +1,38 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
 
 export interface ILesson extends Document {
-  course: Types.ObjectId; // ✅ FIXED
   title: string;
   videoUrl: string;
+  publicId: string;
+  course: Types.ObjectId;
+  order: number;
 }
 
 const lessonSchema = new Schema<ILesson>(
   {
-    course: {
-      type: Schema.Types.ObjectId, // ✅ correct for schema
-      ref: "Courses", // ⚠️ match your Course model name
+    title: {
+      type: String,
       required: true,
     },
-    title: { type: String, required: true },
-    videoUrl: { type: String, required: true },
+    videoUrl: {
+      type: String,
+      required: true,
+    },
+    publicId: {
+      type: String,
+      required: true,
+    },
+    course: {
+      type: Schema.Types.ObjectId,
+      ref: "Courses",
+      required: true,
+    },
+    order: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
 
-export default mongoose.model<ILesson>("Lessons", lessonSchema);
+export default mongoose.model<ILesson>("Lesson", lessonSchema);

@@ -1,32 +1,27 @@
 import express from "express";
 import {
-  createInstructor,
   getAllUsers,
   updateUserRole,
   deleteUser,
   getAllCourses,
   deleteCourse,
-  getStats,
 } from "../controllers/adminController";
-import { protect, admin } from "../middleware/authMiddleware";
+import { protect } from "../middleware/authMiddleware";
+import { requireRole } from "../middleware/roleMiddleware";
 
 const router = express.Router();
 
-// Apply protection to all routes below
+// Apply authentication and admin role requirement to all routes
 router.use(protect);
-router.use(admin);
+router.use(requireRole("admin"));
 
-// User management
+// User management routes
 router.get("/users", getAllUsers);
-router.post("/create-instructor", createInstructor);
-router.patch("/users/:id/role", updateUserRole);
+router.patch("/users/:id", updateUserRole);
 router.delete("/users/:id", deleteUser);
 
-// Course management
+// Course management routes
 router.get("/courses", getAllCourses);
 router.delete("/courses/:id", deleteCourse);
-
-// Stats management
-router.get("/stats", getStats);
 
 export default router;
