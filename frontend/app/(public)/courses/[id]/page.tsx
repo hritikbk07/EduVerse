@@ -4,10 +4,9 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import API from "@/src/lib/axios";
-import { enrollCourse } from "@/src/lib/axios";
+import { createCheckoutSession } from "@/src/lib/axios";
 import Navbar from "@/src/components/navbar/Navbar";
 import { useAuthStore } from "@/src/store/authStore";
-import { useLessons } from "@/src/hooks/useLesson";
 import VideoPlayer from "@/src/components/VideoPlayer";
 import { BookOpen, GraduationCap, Loader2, CheckCircle2, XCircle, PlayCircle } from "lucide-react";
 
@@ -27,14 +26,15 @@ export default function CourseDetailPage() {
   const { user } = useAuthStore();
   const isStudent = user?.role === "student";
 
-  const { lessons, loading: lessonsLoading } = useLessons(courseId);
-
   const [course, setCourse] = useState<Course | null>(null);
+  const [lessons, setLessons] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [lessonsLoading, setLessonsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [enrollStatus, setEnrollStatus] = useState<EnrollStatus>("idle");
   const [enrollMessage, setEnrollMessage] = useState<string>("");
+  const [isEnrolled, setIsEnrolled] = useState(false);
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -52,17 +52,63 @@ export default function CourseDetailPage() {
     fetchCourse();
   }, [courseId]);
 
+  useEffect(() => {
+    const fetchLessonsData = async () => {
+      setLessonsLoading(true);
+      try {
+        let fetchedLessons = [];
+        let enrolled = false;
+
+        if (user) {
+          if (user.role === "admin" || user.role === "instructor") {
+            const res = await API.get(`/api/lesson/${courseId}`);
+            fetchedLessons = res.data;
+            enrolled = true;
+          } else if (user.role === "student") {
+            try {
+              const res = await API.get(`/api/enrollments/${courseId}/lessons`);
+              fetchedLessons = res.data;
+              enrolled = true;
+            } catch (err: any) {
+              const res = await API.get(`/api/courses/${courseId}/lessons`);
+              fetchedLessons = res.data;
+            }
+          }
+        } else {
+          // unauthenticated public lessons
+          // wrap in try catch just in case it 401s, but we know it won't 
+          try {
+             const res = await API.get(`/api/courses/${courseId}/lessons`);
+             fetchedLessons = res.data;
+          } catch(err) {
+             console.error("Public lessons fetch error", err);
+          }
+        }
+
+        setLessons(fetchedLessons);
+        setIsEnrolled(enrolled);
+      } catch (error) {
+        console.error("Error fetching lessons", error);
+      } finally {
+        setLessonsLoading(false);
+      }
+    };
+
+    if (courseId) fetchLessonsData();
+  }, [courseId, user]);
+
   const handleEnroll = async () => {
     setEnrollStatus("loading");
     setEnrollMessage("");
     try {
-      await enrollCourse(courseId);
-      setEnrollStatus("success");
-      setEnrollMessage("🎉 You're enrolled! Head to My Courses to start learning.");
+      const res = await createCheckoutSession(courseId);
+      if (res.data.url) {
+        window.location.href = res.data.url;
+      }
     } catch (err: any) {
       setEnrollStatus("error");
       setEnrollMessage(
-        err?.response?.data?.message || "Failed to enroll. Please try again."
+        err?.response?.data?.message || "Failed to initiate payment. Please try again."
       );
     }
   };
@@ -143,14 +189,14 @@ export default function CourseDetailPage() {
 
             <div className="flex items-center gap-4 flex-wrap">
               <span className="bg-emerald-500/10 text-emerald-400 font-mono font-bold px-4 py-2 rounded-xl border border-emerald-500/20 text-lg">
-                Rs {course.price}
+                ${course.price}
               </span>
             </div>
           </div>
         </div>
 
         {/* Enroll Section — student only */}
-        {isStudent && (
+        {isStudent && !isEnrolled && (
           <div className="bg-slate-900/50 backdrop-blur-sm border border-slate-800 rounded-2xl p-8 text-center">
             <GraduationCap className="w-12 h-12 text-indigo-400 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-white mb-2">Ready to start learning?</h2>
@@ -181,7 +227,7 @@ export default function CourseDetailPage() {
                 {enrollStatus === "loading" ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    Enrolling...
+                    Redirecting...
                   </>
                 ) : (
                   <>
@@ -209,7 +255,7 @@ export default function CourseDetailPage() {
             <BookOpen className="w-5 h-5 text-indigo-400" />
             Course Curriculum
           </h2>
-          
+
           {lessonsLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="w-6 h-6 animate-spin text-indigo-400" />

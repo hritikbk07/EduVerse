@@ -8,14 +8,14 @@ const API = axios.create({
 // Attach token automatically
 API.interceptors.request.use((config) => {
   let token = localStorage.getItem("token");
-  
+
   if (!token) {
     const userStr = localStorage.getItem("user");
     if (userStr) {
       try {
         const user = JSON.parse(userStr);
         token = user.token || null;
-      } catch (err) {}
+      } catch (err) { }
     }
   }
 
@@ -42,6 +42,10 @@ API.interceptors.response.use(
 
 export const enrollCourse = async (courseId: string) => {
   return await API.post(`/api/enrollments/enroll/${courseId}`);
+};
+
+export const createCheckoutSession = async (courseId: string) => {
+  return await API.post("/api/payments/create-checkout-session", { courseId });
 };
 
 export const getMyCourses = async () => {
@@ -89,5 +93,25 @@ export const createLesson = async (data: { title: string; courseId: string; vide
 export const getLessonsByCourse = async (courseId: string) => {
   return await API.get(`/api/lesson/${courseId}`);
 };
+
+// Enrollment APIs
+// export const enrollCourse = async (courseId: string) => {
+//   return await API.post(`/api/enrollments/enroll/${courseId}`);
+// };
+
+// export const getMyCourses = async () => {
+//   return await API.get("/api/enrollments/my-courses");
+// };
+
+export const getCourseLessons = async (courseId: string) => {
+  return await API.get(`/api/enrollments/${courseId}/lessons`);
+};
+
+export const updateLessonProgress = async (courseId: string, lessonId: string) => {
+  return await API.patch(`/api/enrollments/${courseId}/progress`, { lessonId });
+};
+
+
+
 
 export default API;

@@ -57,7 +57,7 @@ export default function HomePage() {
 
         <div className="flex items-center gap-4 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
           <Link href="/courses" className="group relative inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 text-white font-bold rounded-2xl transition-all duration-300 shadow-[0_0_40px_-10px_rgba(99,102,241,0.5)] hover:shadow-[0_0_60px_-10px_rgba(99,102,241,0.7)] hover:scale-105 active:scale-95">
-            Explore Courses
+            View All Courses
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </Link>
           <Link href="/register" className="inline-flex items-center gap-2 px-8 py-4 bg-slate-800/50 hover:bg-slate-800 border border-slate-700 text-white font-bold rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95 backdrop-blur-md">
