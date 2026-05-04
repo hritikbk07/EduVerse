@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import API from "@/src/lib/axios";
 import { createCheckoutSession } from "@/src/lib/axios";
@@ -22,6 +22,7 @@ type EnrollStatus = "idle" | "loading" | "success" | "error";
 
 export default function CourseDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const courseId = params.id as string;
   const { user } = useAuthStore();
   const isStudent = user?.role === "student";
@@ -195,8 +196,8 @@ export default function CourseDetailPage() {
           </div>
         </div>
 
-        {/* Enroll Section — student only */}
-        {isStudent && !isEnrolled && (
+        {/* Enroll Section — public or student only */}
+        {(!user || (isStudent && !isEnrolled)) && (
           <div className="bg-slate-900/50 backdrop-blur-sm border border-slate-800 rounded-2xl p-8 text-center">
             <GraduationCap className="w-12 h-12 text-indigo-400 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-white mb-2">Ready to start learning?</h2>
@@ -220,7 +221,13 @@ export default function CourseDetailPage() {
             {enrollStatus !== "success" && (
               <button
                 id="enroll-now-btn"
-                onClick={handleEnroll}
+                onClick={() => {
+                  if (!user) {
+                    router.push("/login");
+                  } else {
+                    handleEnroll();
+                  }
+                }}
                 disabled={enrollStatus === "loading"}
                 className="inline-flex items-center justify-center gap-2 px-10 py-4 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 text-white font-bold rounded-2xl transition-all duration-300 shadow-[0_0_40px_-10px_rgba(99,102,241,0.5)] hover:shadow-[0_0_60px_-15px_rgba(99,102,241,0.7)] hover:scale-[1.03] active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed text-lg"
               >
@@ -232,7 +239,7 @@ export default function CourseDetailPage() {
                 ) : (
                   <>
                     <GraduationCap className="w-5 h-5" />
-                    Enroll Now
+                    {!user ? "Log in to Enroll" : "Enroll Now"}
                   </>
                 )}
               </button>
