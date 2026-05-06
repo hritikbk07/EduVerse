@@ -65,6 +65,10 @@ export const deleteUser = async (userId: string) => {
   return await API.delete(`/api/admin/users/${userId}`);
 };
 
+export const blockUser = async (userId: string) => {
+  return await API.patch(`/api/admin/users/${userId}/block`);
+};
+
 export const getAllCourses = async () => {
   return await API.get("/api/admin/courses");
 };
@@ -73,8 +77,20 @@ export const deleteCourse = async (courseId: string) => {
   return await API.delete(`/api/admin/courses/${courseId}`);
 };
 
+export const toggleCoursePublish = async (courseId: string) => {
+  return await API.patch(`/api/admin/courses/${courseId}/publish`);
+};
+
 export const getAdminStats = async () => {
   return await API.get("/api/admin/stats");
+};
+
+export const getAdminEnrollments = async () => {
+  return await API.get("/api/admin/enrollments");
+};
+
+export const getAdminPayments = async () => {
+  return await API.get("/api/admin/payments");
 };
 
 // Lesson APIs

@@ -6,9 +6,11 @@ import API from "@/src/lib/axios";
 import Link from "next/link";
 import { Mail, Lock, LogIn, ArrowRight, BookOpen, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
+import { useAuthStore } from "@/src/store/authStore";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { setUser } = useAuthStore();
 
   const [form, setForm] = useState({
     email: "",
@@ -30,9 +32,10 @@ export default function LoginPage() {
 
       const { token, ...user } = res.data;
 
+      // Persist token and update Zustand store (which also writes user to localStorage)
       localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(res.data));
-      
+      setUser(user);
+
       toast.success("Welcome back!", {
         style: { background: '#0f172a', color: '#fff', borderRadius: '12px' }
       });
@@ -41,6 +44,7 @@ export default function LoginPage() {
       if (user.role === "student") router.push("/dashboard");
       else if (user.role === "instructor") router.push("/instructor");
       else if (user.role === "admin") router.push("/admin/dashboard");
+
 
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Login failed", {
@@ -71,7 +75,7 @@ export default function LoginPage() {
           <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-indigo-500/20 to-purple-500/10 border border-indigo-500/20 shadow-inner rounded-2xl flex items-center justify-center transform -rotate-3">
             <LogIn className="w-8 h-8 text-indigo-400" />
           </div>
-          
+
           <h2 className="text-3xl font-extrabold mb-2 text-center text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-300">
             Welcome Back
           </h2>
@@ -85,7 +89,7 @@ export default function LoginPage() {
                 <input
                   type="email"
                   name="email"
-                  placeholder="you@example.com" 
+                  placeholder="you@example.com"
                   required
                   onChange={handleChange}
                   className="w-full pl-12 pr-5 py-3.5 bg-black/40 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-white placeholder-slate-600 font-medium"

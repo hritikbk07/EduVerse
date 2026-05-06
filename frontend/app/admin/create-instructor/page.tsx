@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import API from "@/src/lib/axios";
-import { User, Mail, Lock, ShieldCheck, ArrowRight, Loader2 } from "lucide-react";
+import { User, Mail, Lock, UserPlus, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
-import Link from "next/link";
+import { Card, CardHeader, CardTitle, CardContent } from "@/src/components/ui/Card";
+import { Button } from "@/src/components/ui/Button";
+import { Input } from "@/src/components/ui/Input";
 
 export default function CreateInstructorPage() {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
@@ -17,114 +19,111 @@ export default function CreateInstructorPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
       const res = await API.post("/api/admin/create-instructor", form);
-      toast.success(res.data.message || "Instructor created successfully!", {
-        style: { background: '#0f172a', color: '#fff', borderRadius: '12px' }
-      });
+      toast.success(res.data.message || "Instructor created successfully!");
       setForm({ name: "", email: "", password: "" });
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to create instructor", {
-        style: { background: '#0f172a', color: '#f43f5e', borderRadius: '12px' }
-      });
+      toast.error(err.response?.data?.message || "Failed to create instructor");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-[calc(100vh-80px)] flex bg-[#020617] text-slate-100 flex-col items-center justify-center p-6 relative overflow-hidden">
-      {/* Decorative Blobs */}
-      <div className="absolute top-10 left-10 w-96 h-96 bg-emerald-600/10 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-10 right-10 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
+    <div className="max-w-xl mx-auto space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Create Instructor</h1>
+        <p className="text-gray-500 text-sm mt-1">
+          Provision a new instructor account with immediate platform access.
+        </p>
+      </div>
 
-      <div className="w-full max-w-lg relative z-10 animate-in fade-in zoom-in-95 duration-500">
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-700/50 p-10 shadow-2xl rounded-[2.5rem]">
-          <div className="flex justify-between items-start mb-8">
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold tracking-wider text-xs uppercase mb-4">
-                <ShieldCheck className="w-4 h-4" />
-                Admin Panel
-              </div>
-              <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">
-                Create Instructor
-              </h2>
-              <p className="text-slate-400 mt-2">Provision a powerful new instructor account.</p>
-            </div>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-bold text-slate-300 mb-2">Instructor Name</label>
-              <div className="relative">
-                <User className="absolute left-4 top-3.5 w-5 h-5 text-slate-500" />
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="e.g. Dr. Ada Lovelace"
-                  required
-                  value={form.name}
-                  onChange={handleChange}
-                  className="w-full pl-12 pr-5 py-3.5 bg-black/40 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-white placeholder-slate-600 font-medium"
-                />
-              </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <UserPlus className="h-4 w-4 text-blue-500" />
+            Instructor Details
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700 flex items-center gap-1.5">
+                <User className="h-3.5 w-3.5 text-gray-400" />
+                Full Name
+              </label>
+              <Input
+                type="text"
+                name="name"
+                placeholder="e.g. Dr. Ada Lovelace"
+                required
+                value={form.name}
+                onChange={handleChange}
+              />
             </div>
 
-            <div>
-              <label className="block text-sm font-bold text-slate-300 mb-2">Work Email</label>
-              <div className="relative">
-                <Mail className="absolute left-4 top-3.5 w-5 h-5 text-slate-500" />
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="instructor@eduverse.com"
-                  required
-                  value={form.email}
-                  onChange={handleChange}
-                  className="w-full pl-12 pr-5 py-3.5 bg-black/40 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-white placeholder-slate-600 font-medium"
-                />
-              </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700 flex items-center gap-1.5">
+                <Mail className="h-3.5 w-3.5 text-gray-400" />
+                Work Email
+              </label>
+              <Input
+                type="email"
+                name="email"
+                placeholder="instructor@eduverse.com"
+                required
+                value={form.email}
+                onChange={handleChange}
+              />
             </div>
 
-            <div>
-              <label className="block text-sm font-bold text-slate-300 mb-2">Temporary Password</label>
-              <div className="relative">
-                <Lock className="absolute left-4 top-3.5 w-5 h-5 text-slate-500" />
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="••••••••"
-                  required
-                  value={form.password}
-                  onChange={handleChange}
-                  className="w-full pl-12 pr-5 py-3.5 bg-black/40 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-white placeholder-slate-600 font-medium"
-                />
-              </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700 flex items-center gap-1.5">
+                <Lock className="h-3.5 w-3.5 text-gray-400" />
+                Temporary Password
+              </label>
+              <Input
+                type="password"
+                name="password"
+                placeholder="Min. 8 characters"
+                required
+                minLength={8}
+                value={form.password}
+                onChange={handleChange}
+              />
+              <p className="text-xs text-gray-400">
+                The instructor should change this on first login.
+              </p>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full group mt-8 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white p-4 rounded-xl font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_0_20px_-5px_rgba(16,185,129,0.5)] active:scale-[0.98]"
-            >
-             {loading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <>
-                  Provision Account
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </>
-              )}
-            </button>
+            <div className="pt-2">
+              <Button type="submit" disabled={loading} className="w-full sm:w-auto">
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Creating account...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <UserPlus className="h-4 w-4" />
+                    Create Instructor Account
+                  </span>
+                )}
+              </Button>
+            </div>
           </form>
-        </div>
-        
-        <div className="mt-8 text-center">
-            <Link href="/" className="text-slate-500 hover:text-white font-medium transition-colors text-sm">
-                ← Back to Homepage
-            </Link>
-        </div>
+        </CardContent>
+      </Card>
+
+      {/* Info box */}
+      <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4">
+        <h3 className="text-sm font-semibold text-blue-800 mb-1">What happens next?</h3>
+        <ul className="text-sm text-blue-700 space-y-1 list-disc list-inside">
+          <li>The instructor receives their credentials to log in.</li>
+          <li>They can immediately create and publish courses.</li>
+          <li>You can manage their access from the Users page.</li>
+        </ul>
       </div>
     </div>
   );
