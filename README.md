@@ -17,6 +17,7 @@ EduVerse is a modern, full-stack Learning Management System (LMS) designed to br
 - **Backend:** Node.js, Express.js, TypeScript
 - **Database:** MongoDB (Mongoose)
 - **Authentication:** JSON Web Tokens (JWT)
+- **Media Management:** Cloudinary (Image & Video Upload)
 - **Payments:** Stripe integration
 
 ## Project Structure
