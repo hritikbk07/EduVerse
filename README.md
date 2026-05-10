@@ -1,5 +1,5 @@
 # EduVerse - Empowering Learning Everywhere
-*Your complete full-stack Learning Management System (LMS)*
+* A complete full-stack Learning Management System (LMS)*
 
 ## About EduVerse
 EduVerse is a modern, full-stack Learning Management System (LMS) designed to bridge the gap between instructors and students. Its purpose is to provide a seamless platform where educators can create and manage courses, and learners can easily enroll, track their progress, and acquire new skills. With an intuitive interface and secure payment gateways, EduVerse makes online education accessible and efficient.
