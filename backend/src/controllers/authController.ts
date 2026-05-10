@@ -96,3 +96,11 @@ export const getProfile = async (req: Request & { user?: IUser }, res: Response)
     role: user.role,
   });
 };
+
+// 🚪 Logout User
+export const logoutUser = async (req: Request, res: Response) => {
+  // If using cookies in the future, clear them here:
+  // res.cookie("token", "", { httpOnly: true, expires: new Date(0) });
+  
+  res.status(200).json({ message: "Logged out successfully" });
+};

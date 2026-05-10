@@ -45,14 +45,11 @@ export const createInstructor = asyncHandler(
       return res.status(400).json({ message: "User already exists" });
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     // Create instructor
     const user = await User.create({
       name,
       email,
-      password: hashedPassword,
+      password, // Password will be hashed automatically by the pre-save hook in the User model
       role: "instructor",
     });
 
@@ -260,7 +257,7 @@ export const getStats = asyncHandler(
 
     // Total Revenue Calculation
     // Populate course in enrollments to sum course price
-    const enrollments = await Enrollment.find().populate<{course: any}>("course");
+    const enrollments = await Enrollment.find().populate<{ course: any }>("course");
     const totalRevenue = enrollments.reduce((sum, enrollment) => {
       return sum + (enrollment.course?.price || 0);
     }, 0);
@@ -303,5 +300,136 @@ export const getStats = asyncHandler(
       recentCourses,
       chartData
     });
+  }
+);
+
+// @desc    Toggle block status for a user (admin only)
+// @route   PATCH /api/admin/users/:id/block
+// @access  Private / Admin
+export const blockUser = asyncHandler(
+  async (req: Request, res: Response) => {
+    const adminUser = req.user as IUser;
+
+    if (!adminUser || adminUser.role !== "admin") {
+      return res.status(403).json({ message: "Access denied. Admins only." });
+    }
+
+    const id = req.params.id as string;
+
+    if (!Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
+    if (adminUser._id?.toString() === id) {
+      return res
+        .status(400)
+        .json({ message: "Admins cannot block their own account" });
+    }
+
+    const user = await User.findById(id).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.isBlocked = !user.isBlocked;
+    await user.save();
+
+    res.status(200).json({
+      message: `User ${user.isBlocked ? "blocked" : "unblocked"} successfully`,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        isBlocked: user.isBlocked,
+      },
+    });
+  }
+);
+
+// @desc    Toggle publish status for a course (admin only)
+// @route   PATCH /api/admin/courses/:id/publish
+// @access  Private / Admin
+export const toggleCoursePublish = asyncHandler(
+  async (req: Request, res: Response) => {
+    const adminUser = req.user as IUser;
+
+    if (!adminUser || adminUser.role !== "admin") {
+      return res.status(403).json({ message: "Access denied. Admins only." });
+    }
+
+    const id = req.params.id as string;
+
+    if (!Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid course ID" });
+    }
+
+    const course = await Course.findById(id);
+
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    course.isPublished = !course.isPublished;
+    await course.save();
+
+    res.status(200).json({
+      message: `Course ${course.isPublished ? "published" : "unpublished"} successfully`,
+      course: {
+        _id: course._id,
+        title: course.title,
+        isPublished: course.isPublished,
+      },
+    });
+  }
+);
+
+// @desc    Get all enrollments (admin only)
+// @route   GET /api/admin/enrollments
+// @access  Private / Admin
+export const getAllEnrollments = asyncHandler(
+  async (req: Request, res: Response) => {
+    const adminUser = req.user as IUser;
+    if (!adminUser || adminUser.role !== "admin") {
+      return res.status(403).json({ message: "Access denied. Admins only." });
+    }
+
+    const enrollments = await Enrollment.find()
+      .populate("user", "name email role")
+      .populate("course", "title price")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({ count: enrollments.length, enrollments });
+  }
+);
+
+// @desc    Get all payments (admin only) – derived from enrollments with course price
+// @route   GET /api/admin/payments
+// @access  Private / Admin
+export const getAllPayments = asyncHandler(
+  async (req: Request, res: Response) => {
+    const adminUser = req.user as IUser;
+    if (!adminUser || adminUser.role !== "admin") {
+      return res.status(403).json({ message: "Access denied. Admins only." });
+    }
+
+    const enrollments = await Enrollment.find()
+      .populate<{ user: any }>("user", "name email")
+      .populate<{ course: any }>("course", "title price")
+      .sort({ createdAt: -1 });
+
+    const payments = enrollments
+      .filter((e) => e.course && e.course.price > 0)
+      .map((e) => ({
+        _id: e._id,
+        user: e.user,
+        course: e.course,
+        amount: e.course?.price || 0,
+        status: "completed",
+        date: e.createdAt,
+      }));
+
+    res.status(200).json({ count: payments.length, payments });
   }
 );

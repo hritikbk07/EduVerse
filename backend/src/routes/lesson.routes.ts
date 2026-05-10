@@ -27,7 +27,12 @@ router.post(
   createLesson
 );
 
-// GET → Get Lessons
-router.get("/:courseId", protect, getLessonsByCourse);
+// GET → Get Lessons (Instructor/Admin only)
+router.get(
+  "/:courseId",
+  protect,
+  requireRole("instructor", "admin"),
+  getLessonsByCourse
+);
 
 export default router;

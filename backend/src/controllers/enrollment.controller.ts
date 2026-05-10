@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { Types } from 'mongoose';
 import Enrollment from '../models/Enrollment';
 import Course from '../models/course';
+import Lesson from '../models/lesson';
 import { asyncHandler } from '../utils/asyncHandler';
 import { IUser } from '../models/user';
 
@@ -65,3 +66,30 @@ export const getMyCourses = asyncHandler(async (req: Request, res: Response) => 
 
   res.status(200).json(enrollments);
 });
+
+// @desc    Get lessons for a course (only if enrolled)
+// @route   GET /api/enrollments/:courseId/lessons
+// @access  Private
+export const getCourseLessons = asyncHandler(async (req: Request, res: Response) => {
+  const courseId = req.params.courseId as string;
+  const userId = (req.user as IUser)?._id;
+
+  if (!userId) {
+    return res.status(401).json({ message: 'Unauthorized, user not found' });
+  }
+
+  if (!Types.ObjectId.isValid(courseId)) {
+    return res.status(400).json({ message: 'Invalid course ID' });
+  }
+
+  // Check enrollment
+  const enrollment = await Enrollment.findOne({ user: userId, course: courseId });
+  if (!enrollment) {
+    return res.status(403).json({ message: 'You must enroll to access lessons.' });
+  }
+
+  // Fetch lessons for the course
+  const lessons = await Lesson.find({ course: courseId });
+  res.status(200).json(lessons);
+});
+

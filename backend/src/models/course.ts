@@ -5,6 +5,7 @@ export interface ICourse extends Document {
   description: string
   instructor: Types.ObjectId
   price: number
+  isPublished: boolean
 }
 
 const courseSchema = new Schema(
@@ -12,7 +13,8 @@ const courseSchema = new Schema(
     title: { type: String, required: true },
     description: { type: String, required: true },
     instructor: { type: Schema.Types.ObjectId, ref: "Users", required: true },
-    price: { type: Number, default: 0 }
+    price: { type: Number, default: 0 },
+    isPublished: { type: Boolean, default: false }
   },
   { timestamps: true }
 )

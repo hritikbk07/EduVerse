@@ -6,6 +6,7 @@ export interface IUser extends Document {
   email: string
   password: string
   role: "student" | "instructor" | "admin"
+  isBlocked: boolean
   matchPassword: (enteredPassword: string) => Promise<boolean>
 }
 
@@ -18,6 +19,10 @@ const userSchema: Schema<IUser> = new Schema(
       type: String,
       enum: ["student", "instructor", "admin"],
       default: "student"
+    },
+    isBlocked: {
+      type: Boolean,
+      default: false
     }
   },
   { timestamps: true }

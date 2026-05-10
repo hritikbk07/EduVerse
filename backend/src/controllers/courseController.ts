@@ -4,7 +4,7 @@ import { Types } from "mongoose";
 import Course from "../models/course";
 import Lesson from "../models/lesson";
 import { IUser } from "../models/user";
-import User from "../models/user"; 
+import User from "../models/user";
 
 // ✅ Create Course (Admin only)
 export const createCourse = async (req: Request, res: Response): Promise<void> => {
@@ -99,7 +99,7 @@ export const getLessons = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
-    const lessons = await Lesson.find({ course: new Types.ObjectId(courseId) });
+    const lessons = await Lesson.find({ course: new Types.ObjectId(courseId) }).select('-videoUrl -publicId');
 
     res.status(200).json(lessons);
   } catch (error) {
